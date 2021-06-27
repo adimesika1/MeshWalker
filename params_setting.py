@@ -147,7 +147,7 @@ def modelnet40_normal_resampled_params():
   params.datasets2use['test'] = [ds_path + '/*test*.npz']
 
 
-  params.seq_len = 1400 #1400
+  params.seq_len = 800 #1400
   params.min_seq_len = int(params.seq_len / 2)
 
   params.full_accuracy_test = {'dataset_expansion': params.datasets2use['test'][0],
@@ -163,7 +163,7 @@ def modelnet40_normal_resampled_params():
   params.walk_alg = 'local_jumps'   # no_jumps / global_jumps
 
   # Set to start from prev net
-  #path = 'runs/0154-26.05.2021..16.13__modelnet40_normal_resampled/learned_model2keep__00040086.keras'
+  #path = 'runs/0172-21.06.2021..09.23__modelnet40_normal_resampled/learned_model2keep__00010142.keras'
   #params.net_start_from_prev_net = path
 
   return params

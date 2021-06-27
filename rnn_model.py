@@ -140,6 +140,7 @@ class RnnWalkNet(RnnWalkBase):
                              kernel_initializer=initializer)
     self._fc4 = layers.Dense(self._layer_sizes['fc4'], kernel_regularizer=kernel_regularizer, bias_regularizer=kernel_regularizer,
                              kernel_initializer=initializer)
+    self._dropout = layers.Dropout(0.5)
 
   def call(self, model_ftrs, classify=True, skip_1st=True, training=True):
     if skip_1st:
@@ -166,11 +167,12 @@ class RnnWalkNet(RnnWalkBase):
     x = tf.concat([f, x3], axis=1)
 
     if classify:
-      x = self._fc3(x)
+      x = self._fc3(x, training=training)
       x = tf.nn.relu(x)
       #x = self._fc4(x)
       #x = tf.nn.relu(x)
-      x = self._fc_last(x)
+      x = self._dropout(x, training=training)
+      x = self._fc_last(x, training=training)
 
     return x
 

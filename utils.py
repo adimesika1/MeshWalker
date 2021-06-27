@@ -318,7 +318,7 @@ def get_model_name_from_npz_fn(npz_fn):
   sp_fn = fn.split('_')
   if npz_fn.find('/shrec11') == -1:
     sp_fn = sp_fn[1:]
-  i = np.where([s.isdigit() for s in sp_fn])[0][0]
+  i = np.where([s.isdigit() for s in sp_fn])[0][1] # maybe zero depend on the file name
   model_name = '_'.join(sp_fn[:i + 1])
   #n_faces = int(sp_fn[-1])
 

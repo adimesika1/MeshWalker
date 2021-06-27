@@ -1,22 +1,18 @@
 import sys, copy
 from easydict import EasyDict
 import json
-import platform
 
 import numpy as np
 import tensorflow as tf
-import trimesh, open3d
-import pyvista as pv
-import scipy
-import pylab as plt
-from sklearn.manifold import TSNE
-from sklearn.decomposition import KernelPCA
+import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 import rnn_model
 import utils
 import dataset
-
+import dataset_prepare
 
 def calc_accuracy_test(dataset_expansion=False, logdir=None, labels=None, iter2use='last', classes_indices_to_use=None,
                        dnn_model=None, params=None, min_max_faces2use=[0, 4000], model_fn=None, n_walks_per_model=16, data_augmentation={}):
@@ -115,6 +111,34 @@ def calc_accuracy_test(dataset_expansion=False, logdir=None, labels=None, iter2u
     this_type_[i] = -1
   mean_acc_per_class = np.mean(acc_per_class)
 
+
+  df_cm = pd.DataFrame(all_confusion, [c for c in dataset_prepare.model_net_labels], [c for c in dataset_prepare.model_net_labels])
+  sn.set_theme(style="white")
+  '''cm_sum = np.sum(all_confusion, axis=1, keepdims=True)
+  cm_perc = all_confusion / cm_sum.astype(float) * 100
+  annot = np.empty_like(all_confusion).astype(str)
+  nrows, ncols = all_confusion.shape
+  for i in range(nrows):
+    for j in range(ncols):
+      c = all_confusion[i, j]
+      p = cm_perc[i, j]
+      if i == j:
+        s = cm_sum[i]
+        annot[i, j] = '%.1f%%\n' % p
+      elif c == 0:
+        annot[i, j] = ''
+      else:
+        annot[i, j] = '%.1f%%\n' % p
+  '''
+  f, ax = plt.subplots(figsize=(25, 20))
+  cmap = sn.diverging_palette(230, 20, as_cmap=True)
+  sn.heatmap(df_cm, cmap="BuPu", vmin=0, vmax=np.max(all_confusion), center=0,
+              linewidths=.5, annot=True) #square=True cbar_kws={"shrink": .5}
+  plt.xlabel("predicted labels")
+  plt.ylabel("gt labels")
+  #plt.show()
+  plt.savefig(params.logdir + '/' + str('confusion_modelnet40.png'), dpi=400)
+
   return [mean_accuracy_all_faces, mean_acc_per_class], dnn_model
 
 
@@ -136,8 +160,8 @@ if __name__ == '__main__':
                                  dataset_expansion=params.full_accuracy_test['dataset_expansion'],
                                  labels=params.full_accuracy_test['labels'],
                                  n_walks_per_model=params.full_accuracy_test['n_walks_per_model'],
-                                 iter2use='00140148', params=params)
+                                 iter2use='00080214', params=params)
     print('Mean accuracy:', accs[0])
     print('Mean per class accuracy:', accs[1])
 
-    ### modelnet40_normal_resampled 1 runs/0118-10.04.2021..09.50__modelnet40_normal_resampled ###
+    ### modelnet40_normal_resampled 1 runs/0174-21.06.2021..15.43__modelnet40_normal_resampled###

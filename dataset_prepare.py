@@ -422,9 +422,11 @@ def prepare_modelnet40_normal_resampled():
   cat = [line.rstrip() for line in open(catfile)]
   classes = dict(zip(cat, range(len(cat))))
   fileds_needed = ['vertices', 'faces', 'edges', 'kdtree_query', 'label', 'labels', 'dataset_name', 'model_features', 'model_scales', 'vertex_normals']
-  npoints = 5000
+  #npoints = 5000
   normalize = True
   for part in ['test', 'train']:
+    npoints_list = [2048] if part == 'test' else [1024, 2048, 4096]
+    for npoints in npoints_list:
         print('part: ', part)
         count_files = 0
         path_models_file_per_part = p + 'modelnet40_' + part + '.txt'
@@ -448,7 +450,7 @@ def prepare_modelnet40_normal_resampled():
 
           file_name = os.path.basename(str(f))
           (prefix, sep, suffix) = file_name.rpartition('.')
-          out_fn = p_out + part + '__' + f[1] + '__' + prefix
+          out_fn = p_out + part + '__' + str(npoints) + '__' + f[1] + '__' + prefix
           if os.path.isfile(out_fn + '.npz'):
             continue
 
@@ -458,6 +460,7 @@ def prepare_modelnet40_normal_resampled():
                                        'model_scales': point_set_scale, 'vertex_normals': np.asarray(point_set[:, 3:6])})
           add_fields_and_dump_model(point_cloud_dict, fileds_needed, out_fn, dataset_name)
           count_files += 1
+
 
 
 
